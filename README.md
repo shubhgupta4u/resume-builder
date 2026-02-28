@@ -36,7 +36,12 @@ components) data-access/ (API services & models)
 
 ### Nx Commands
 
-Create workspace: npx create-nx-workspace@latest resume-builder
+npx nx show projects
+
+npx nx g @nx/workspace:remove shop-e2e
+
+
+Create workspace: npx create-nx-workspace@latest frontend
 
 Generate host: 
 npx nx g @nx/angular:host --name=shell --style=scss --directory=apps/shell
