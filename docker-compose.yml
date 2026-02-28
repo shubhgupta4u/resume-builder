@@ -1,0 +1,36 @@
+
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: resume-postgres
+    environment:
+      POSTGRES_DB: resume_db
+      POSTGRES_USER: resume_user
+      POSTGRES_PASSWORD: resume_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  gateway:
+    build: ./backend/gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      - auth-service
+      - resume-service
+
+  auth-service:
+    build: ./backend/auth-service
+    depends_on:
+      - postgres
+
+  resume-service:
+    build: ./backend/resume-service
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:
