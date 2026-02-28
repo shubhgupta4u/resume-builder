@@ -1,0 +1,104 @@
+{
+  "name": "resumeApp",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "prefix": "app",
+  "sourceRoot": "apps/micro-frontends/resumeApp/src",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/angular:webpack-browser",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/micro-frontends/resumeApp",
+        "index": "apps/micro-frontends/resumeApp/src/index.html",
+        "main": "apps/micro-frontends/resumeApp/src/main.ts",
+        "tsConfig": "apps/micro-frontends/resumeApp/tsconfig.app.json",
+        "assets": [
+          {
+            "glob": "**/*",
+            "input": "apps/micro-frontends/resumeApp/public"
+          }
+        ],
+        "styles": ["apps/micro-frontends/resumeApp/src/styles.css"],
+        "customWebpackConfig": {
+          "path": "apps/micro-frontends/resumeApp/webpack.config.ts"
+        }
+      },
+      "configurations": {
+        "production": {
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "500kb",
+              "maximumError": "1mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "4kb",
+              "maximumError": "8kb"
+            }
+          ],
+          "outputHashing": "all",
+          "customWebpackConfig": {
+            "path": "apps/micro-frontends/resumeApp/webpack.prod.config.ts"
+          }
+        },
+        "development": {
+          "buildOptimizer": false,
+          "optimization": false,
+          "vendorChunk": true,
+          "extractLicenses": false,
+          "sourceMap": true,
+          "namedChunks": true
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "serve": {
+      "continuous": true,
+      "executor": "@nx/angular:dev-server",
+      "options": {
+        "port": 4202,
+        "publicHost": "http://localhost:4202"
+      },
+      "configurations": {
+        "production": {
+          "buildTarget": "resumeApp:build:production"
+        },
+        "development": {
+          "buildTarget": "resumeApp:build:development"
+        }
+      },
+      "defaultConfiguration": "development",
+      "dependsOn": ["shell:serve"]
+    },
+    "extract-i18n": {
+      "executor": "@angular-devkit/build-angular:extract-i18n",
+      "options": {
+        "buildTarget": "resumeApp:build"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "serve-static": {
+      "continuous": true,
+      "executor": "@nx/web:file-server",
+      "defaultConfiguration": "production",
+      "options": {
+        "buildTarget": "resumeApp:build",
+        "port": 4202,
+        "watch": false
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "resumeApp:build:development"
+        },
+        "production": {
+          "buildTarget": "resumeApp:build:production"
+        }
+      }
+    }
+  }
+}

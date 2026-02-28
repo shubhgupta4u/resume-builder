@@ -1,0 +1,104 @@
+{
+  "name": "adminApp",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "prefix": "app",
+  "sourceRoot": "apps/micro-frontends/adminApp/src",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/angular:webpack-browser",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/micro-frontends/adminApp",
+        "index": "apps/micro-frontends/adminApp/src/index.html",
+        "main": "apps/micro-frontends/adminApp/src/main.ts",
+        "tsConfig": "apps/micro-frontends/adminApp/tsconfig.app.json",
+        "assets": [
+          {
+            "glob": "**/*",
+            "input": "apps/micro-frontends/adminApp/public"
+          }
+        ],
+        "styles": ["apps/micro-frontends/adminApp/src/styles.css"],
+        "customWebpackConfig": {
+          "path": "apps/micro-frontends/adminApp/webpack.config.ts"
+        }
+      },
+      "configurations": {
+        "production": {
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "500kb",
+              "maximumError": "1mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "4kb",
+              "maximumError": "8kb"
+            }
+          ],
+          "outputHashing": "all",
+          "customWebpackConfig": {
+            "path": "apps/micro-frontends/adminApp/webpack.prod.config.ts"
+          }
+        },
+        "development": {
+          "buildOptimizer": false,
+          "optimization": false,
+          "vendorChunk": true,
+          "extractLicenses": false,
+          "sourceMap": true,
+          "namedChunks": true
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "serve": {
+      "continuous": true,
+      "executor": "@nx/angular:dev-server",
+      "options": {
+        "port": 4204,
+        "publicHost": "http://localhost:4204"
+      },
+      "configurations": {
+        "production": {
+          "buildTarget": "adminApp:build:production"
+        },
+        "development": {
+          "buildTarget": "adminApp:build:development"
+        }
+      },
+      "defaultConfiguration": "development",
+      "dependsOn": ["shell:serve"]
+    },
+    "extract-i18n": {
+      "executor": "@angular-devkit/build-angular:extract-i18n",
+      "options": {
+        "buildTarget": "adminApp:build"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "serve-static": {
+      "continuous": true,
+      "executor": "@nx/web:file-server",
+      "defaultConfiguration": "production",
+      "options": {
+        "buildTarget": "adminApp:build",
+        "port": 4204,
+        "watch": false
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "adminApp:build:development"
+        },
+        "production": {
+          "buildTarget": "adminApp:build:production"
+        }
+      }
+    }
+  }
+}
