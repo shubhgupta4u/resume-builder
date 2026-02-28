@@ -15,7 +15,23 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@org/models": ["libs/shared/models/src/index.ts"]
+      "@org/models": ["libs/shared/models/src/index.ts"],
+      "@org/core": ["libs/core/src/index.ts"],
+      "@org/shared-ui": ["libs/shared-ui/src/index.ts"],
+      "@org/data-api": ["libs/data-api/src/index.ts"],
+      "@org/data-access": ["libs/shared/data-access/src/index.ts"],
+      "adminApp/Routes": [
+        "micro-frontends/adminApp/src/app/remote-entry/entry.routes.ts"
+      ],
+      "authApp/Routes": [
+        "micro-frontends/authApp/src/app/remote-entry/entry.routes.ts"
+      ],
+      "resumeApp/Routes": [
+        "micro-frontends/resumeApp/src/app/remote-entry/entry.routes.ts"
+      ],
+      "subscriptionApp/Routes": [
+        "micro-frontends/subscriptionApp/src/app/remote-entry/entry.routes.ts"
+      ]
     }
   },
   "exclude": ["node_modules", "tmp"]

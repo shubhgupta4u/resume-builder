@@ -36,26 +36,52 @@ components) data-access/ (API services & models)
 
 ### Nx Commands
 
-npx nx show projects
-
-npx nx g @nx/workspace:remove shop-e2e
-
-
+Generate nx workspace: 
 Create workspace: npx create-nx-workspace@latest frontend
 
 Generate host: 
-npx nx g @nx/angular:host --name=shell --style=scss --directory=apps/shell
+npx nx g @nx/angular:host shell --style=scss
 
 Generate remotes: 
-npx nx g @nx/angular:remote --name=authApp --host=shell --directory=apps/auth_app
-npx nx g @nx/angular:remote --name=resumeApp --host=shell --directory=apps/resume_app
-npx nx g @nx/angular:remote --name=subscriptionApp --host=shell --directory=apps/subscription_app
-npx nx g @nx/angular:remote --name=adminApp --host=shell --directory=apps/admin_app
+npx nx g @nx/angular:remote authApp --host=shell
+npx nx g @nx/angular:remote resumeApp --host=shell
+npx nx g @nx/angular:remote subscriptionApp --host=shell
+npx nx g @nx/angular:remote adminApp --host=shell
 
 Generate shared libraries: 
-npx nx g @nx/angular:library --name=core --directory=apps/auth_app
-npx nx g @nx/angular:library --name=shared-ui --directory=apps/auth_app
-npx nx g @nx/angular:library --name=data-access --directory=apps/auth_app
+npx nx g @nx/angular:library core
+npx nx g @nx/angular:library shared-ui
+npx nx g @nx/angular:library data-acce
+
+To reset nx cache
+npx nx reset
+
+To list all projects
+npx nx show projects
+
+To remove remote project:
+npx nx g @nx/workspace:remove authApp
+
+To build nx projects
+npx nx run-many --target=build --projects=shell,authApp,resumeApp,subscriptionApp,adminApp --configuration=production
+Or
+npx nx build shell --with-deps --configuration=production
+
+To build nx shell project
+npx nx serve shell --configuration=production
+
+One Time (Install Static Server)
+npm install -g serve
+
+serve dist/apps/authApp -l 5000
+serve dist/micro-frontends/authApp -l 5001
+serve dist/micro-frontends/resumeApp -l 5002
+serve dist/micro-frontends/subscriptionApp -l 5003
+serve dist/micro-frontends/adminApp -l 5004
+
+npx nx serve shell
+
+npx nx run-many --target=serve --projects=shell,authApp,resumeApp,subscriptionApp,adminApp --parallel
 
 ------------------------------------------------------------------------
 
@@ -73,10 +99,50 @@ subscription-service - admin-service - notification-service
 -   Lombok
 -   Actuator
 
-Create service via CLI: curl https://start.spring.io/starter.zip -d
+Create service via CLI: 
+curl https://start.spring.io/starter.zip -d
 dependencies=web,data-jpa,security,postgresql,lombok,actuator -d
 name=resume-service -o resume-service.zip
+Or
+curl https://start.spring.io/starter.zip -d dependencies=web,data-jpa,security,postgresql,lombok,actuator -d type=maven-project -d name=resume-service -d javaVersion=17 -d name=resume-service -o resume-service.zip
 
+Run All Services (Parallel)
+Start-Process cmd -ArgumentList "/k cd auth-service && mvnw.cmd spring-boot:run"
+Start-Process cmd -ArgumentList "/k cd user-service && mvnw.cmd spring-boot:run"
+Start-Process cmd -ArgumentList "/k cd resume-service && mvnw.cmd spring-boot:run"
+Start-Process cmd -ArgumentList "/k cd subscription-service && mvnw.cmd spring-boot:run"
+Start-Process cmd -ArgumentList "/k cd admin-service && mvnw.cmd spring-boot:run"
+Start-Process cmd -ArgumentList "/k cd notification-service && mvnw.cmd spring-boot:run"
+
+Run in VS Code
+.\mvnw.cmd clean
+.\mvnw.cmd spring-boot:run
+
+./mvnw spring-boot:run
+Or
+mvnw.cmd spring-boot:run
+
+http://localhost:8081/api/health
+http://localhost:8082/api/health
+http://localhost:8083/api/health
+http://localhost:8084/api/health
+http://localhost:8085/api/health
+http://localhost:8086/api/health
+
+### Docker
+#### Step 1- Edit postgresql.conf
+Find
+listen_addresses = 'localhost'
+Change to
+listen_addresses = '*'
+
+#### Step 2- Add below line in pg_hba.conf to Allow Docker containers
+host    all             all             0.0.0.0/0               scram-sha-256
+
+#### Run Backend Java Springboot services through docker
+docker compose up --build
+
+docker logs auth-service
 ------------------------------------------------------------------------
 
 ## 🚪 API Gateway

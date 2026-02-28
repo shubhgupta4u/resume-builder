@@ -1,0 +1,104 @@
+{
+  "name": "subscriptionApp",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "prefix": "app",
+  "sourceRoot": "micro-frontends/subscriptionApp/src",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/angular:webpack-browser",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/micro-frontends/subscriptionApp",
+        "index": "micro-frontends/subscriptionApp/src/index.html",
+        "main": "micro-frontends/subscriptionApp/src/main.ts",
+        "tsConfig": "micro-frontends/subscriptionApp/tsconfig.app.json",
+        "assets": [
+          {
+            "glob": "**/*",
+            "input": "micro-frontends/subscriptionApp/public"
+          }
+        ],
+        "styles": ["micro-frontends/subscriptionApp/src/styles.css"],
+        "customWebpackConfig": {
+          "path": "micro-frontends/subscriptionApp/webpack.config.ts"
+        }
+      },
+      "configurations": {
+        "production": {
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "500kb",
+              "maximumError": "1mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "4kb",
+              "maximumError": "8kb"
+            }
+          ],
+          "outputHashing": "all",
+          "customWebpackConfig": {
+            "path": "micro-frontends/subscriptionApp/webpack.prod.config.ts"
+          }
+        },
+        "development": {
+          "buildOptimizer": false,
+          "optimization": false,
+          "vendorChunk": true,
+          "extractLicenses": false,
+          "sourceMap": true,
+          "namedChunks": true
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "serve": {
+      "continuous": true,
+      "executor": "@nx/angular:dev-server",
+      "options": {
+        "port": 4204,
+        "publicHost": "http://localhost:4204"
+      },
+      "configurations": {
+        "production": {
+          "buildTarget": "subscriptionApp:build:production"
+        },
+        "development": {
+          "buildTarget": "subscriptionApp:build:development"
+        }
+      },
+      "defaultConfiguration": "development",
+      "dependsOn": ["shell:serve"]
+    },
+    "extract-i18n": {
+      "executor": "@angular-devkit/build-angular:extract-i18n",
+      "options": {
+        "buildTarget": "subscriptionApp:build"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
+    "serve-static": {
+      "continuous": true,
+      "executor": "@nx/web:file-server",
+      "defaultConfiguration": "production",
+      "options": {
+        "buildTarget": "subscriptionApp:build",
+        "port": 4204,
+        "watch": false
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "subscriptionApp:build:development"
+        },
+        "production": {
+          "buildTarget": "subscriptionApp:build:production"
+        }
+      }
+    }
+  }
+}

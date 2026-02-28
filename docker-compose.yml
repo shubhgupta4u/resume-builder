@@ -2,35 +2,73 @@
 version: '3.8'
 
 services:
-  postgres:
-    image: postgres:15
-    container_name: resume-postgres
-    environment:
-      POSTGRES_DB: resume_db
-      POSTGRES_USER: resume_user
-      POSTGRES_PASSWORD: resume_pass
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-
-  gateway:
-    build: ./backend/gateway
-    ports:
-      - "8080:8080"
-    depends_on:
-      - auth-service
-      - resume-service
 
   auth-service:
-    build: ./backend/auth-service
-    depends_on:
-      - postgres
+    build:
+      context: ./backend/auth-service
+    container_name: auth-service
+    ports:
+      - "8082:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://host.docker.internal:5432/auth_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: password
+      AUTH_ADMIN-SERVICE_BASE-URL: http://admin-service:8080
+      AUTH_ISSUER: http://auth-service:8080
+      SERVER_PORT: 8080
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
-  resume-service:
-    build: ./backend/resume-service
+  admin-service:
+    build:
+      context: ./backend/admin-service
+    container_name: admin-service
+    ports:
+      - "8081:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://host.docker.internal:5432/admin_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: password
+      AUTH_SERVICE_URL: http://auth-service:8080
+      SERVER_PORT: 8080
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER-URI: http://auth-service:8080
     depends_on:
-      - postgres
+      - auth-service
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
-volumes:
-  postgres_data:
+networks:
+  default:
+    name: resume-network
+#   postgres:
+#     image: postgres:15
+#     container_name: resume-postgres
+#     environment:
+#       POSTGRES_DB: resume_db
+#       POSTGRES_USER: resume_user
+#       POSTGRES_PASSWORD: resume_pass
+#     ports:
+#       - "5432:5432"
+#     volumes:
+#       - postgres_data:/var/lib/postgresql/data
+
+#   gateway:
+#     build: ./backend/gateway
+#     ports:
+#       - "8080:8080"
+#     depends_on:
+#       - auth-service
+#       - resume-service
+
+#   auth-service:
+#     build: ./backend/auth-service
+#     depends_on:
+#       - postgres
+
+#   resume-service:
+#     build: ./backend/resume-service
+#     depends_on:
+#       - postgres
+
+# volumes:
+#   postgres_data:
